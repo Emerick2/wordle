@@ -23,3 +23,10 @@
     transition: 0.2s;
     background-color: rgb(164, 160, 160);
 }
+
+keyboard{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+}

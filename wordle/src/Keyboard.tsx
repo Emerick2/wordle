@@ -1,10 +1,10 @@
-interface Keyboard {
+interface KeyboardProps {
     character : string;
 	deleteButton : boolean;
 	enterButton : boolean;
 }
 
-export default function PressAKey({character, deleteButton, enterButton} : Keyboard) {
+export default function PressAKey({character, deleteButton, enterButton} : KeyboardProps) {
 	console.log("ici");
 	console.log(character + deleteButton + enterButton);
 	// return(
