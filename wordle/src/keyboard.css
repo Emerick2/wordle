@@ -1,0 +1,25 @@
+.keyboardKey{
+    transition: 0.2s;
+    background-color: rgb(106, 104, 104);
+    color:white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: solid 2px black;
+    padding: 3px;
+    font-size: 1.3rem;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.keyboardKey:hover{
+    transition: 0.2s;
+    background-color: rgb(176, 175, 175);
+}
+
+.keyboardKey:active{
+    transition: 0.2s;
+    background-color: rgb(164, 160, 160);
+}
