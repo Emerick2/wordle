@@ -3,7 +3,6 @@ import Grid from "./components/Grid";
 import './App.css'
 import KeyboardEvent from "./Keyboard";
 import type { AttemptProps } from "./components/Grid";
-import type { KeyboardProps } from "./Keyboard";
 
 let RandomInt = (min : number, max : number) => {
     if (max < min) {
@@ -128,7 +127,7 @@ function App() {
     return () => {
       window.removeEventListener("keydown", keyDown);
     };
-  }, [keyboardActivated]);
+  }, [keyboardActivated, characterId, lineId, attempts]);
 
 
     useEffect(() => {
@@ -160,8 +159,6 @@ function App() {
 
       callAPIWordle();
     }, []);
-  
-  
 
   return (
     <>    
