@@ -2,6 +2,8 @@ import {useEffect, useState} from 'react';
 import Grid from "./components/Grid";
 import './App.css'
 import KeyboardEvent from "./Keyboard";
+import type { AttemptProps } from "./components/Grid";
+import type { KeyboardProps } from "./Keyboard";
 
 let RandomInt = (min : number, max : number) => {
     if (max < min) {
@@ -11,16 +13,89 @@ let RandomInt = (min : number, max : number) => {
 }
 
 function App() {
+  const [attempts, setAttempts] = useState<AttemptProps[]>([
+      {
+        status: "pending" as const,
+        letters: [
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+        ],
+      },
+      {
+        status: "pending" as const,
+        letters: [
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+        ],
+      },
+      {
+        status: "pending" as const,
+        letters: [
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+        ],
+      },
+      {
+        status: "pending" as const,
+        letters: [
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+        ],
+      },
+      {
+        status: "pending" as const,
+        letters: [
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+        ],
+      },
+      {
+        status: "pending" as const,
+        letters: [
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+          { letter: "", status: "empty" as const },
+        ],
+      },
+  ]);
+  
   const [keyboardActivated, setKeyboardActivated] = useState<boolean>(true);
 
   const [word, setWord] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+
+  const [ligneId, setLigneId] = useState<number>(0);
+  const [characterId, setCharacterId] = useState<number>(0);
 
   const touche1 : string[] = ["a","z","e","r","t","y","u","i","o","p"];
   const touche2 : string[] = ["q","s","d","f","g","h","j","k","l","m"];
   const touche3 : string[] = ["w","x","c","v","b","n"];
 
   const allKeys : string[] = [...touche1, ...touche2, ...touche3];
+
+  const keyDownAction = (newCharacter : string, newDeleteButton : boolean, newEnterButton : boolean) => {
+    if (characterId < 5){
+      setAttempts(KeyboardEvent({ character: newCharacter, deleteButton: newDeleteButton, enterButton: newEnterButton, attempts:attempts, ligneId : ligneId, characterId : characterId }));
+      setCharacterId(characterId + 1);
+    }
+  }
 
   useEffect(() => {
     const keyDown = (event : globalThis.KeyboardEvent) => {
@@ -29,13 +104,13 @@ function App() {
       const key = event.key.toLowerCase();
 
       if (key === 'enter') {
-        KeyboardEvent({ character: "", deleteButton: false, enterButton: true });
+        keyDownAction("", false, true);
       }
       else if (key === 'backspace') {
-        KeyboardEvent({ character: "", deleteButton: true, enterButton: false });
+        keyDownAction("", true, false);
       }
       else if (allKeys.includes(key)) {
-        KeyboardEvent({ character: key, deleteButton: false, enterButton: false });
+        keyDownAction(key, false, false);
       }
     };
     window.addEventListener('keydown', keyDown);
@@ -76,17 +151,20 @@ function App() {
       callAPIWordle();
     }, []);
   
+  
 
   return (
     <>    
-      {loading ? <main>
-        <Grid />
+      <main>
+        {loading == true ? <p>Chargement en cours...</p> : null}
+
+        <Grid attempts={attempts} />
         {/* {keyboardActivated==true ? <section className="keyboard"> */}
           
         <section className="keyboard">
           {touche1.map((e, index) => (
             <>
-              <article key={index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
+              <article key={1000+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
                 {e}
               </article>
             </>
@@ -95,30 +173,30 @@ function App() {
         <section className="keyboard">
           {touche2.map((e, index) => (
             <>
-              <article key={touche1.length+index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
+              <article key={1000+touche1.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
                 {e}
               </article>
             </>
           ))}
         </section>
         <section className="keyboard">
-          <article className='keyboardKey keyboardKeySuper'  onClick={(k) => { KeyboardEvent({character:"", deleteButton:false, enterButton:true}); }}>
+          <article className='keyboardKey keyboardKeySuper'  onClick={(k) => { keyDownAction("", false, true); }}>
             ⏎
           </article>
           {touche3.map((e, index) => (
             <>
-              <article key={touche1.length+touche2.length+index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
+              <article key={1000+touche1.length+touche2.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
                 {e}
               </article>
             </>
           ))}
-          <article className='keyboardKey keyboardKeySuper' onClick={(k) => { KeyboardEvent({character:"", deleteButton:true, enterButton:false}); }}>
+          <article className='keyboardKey keyboardKeySuper' onClick={(k) => { keyDownAction("", true, false); }}>
             ⌫
           </article>
         </section>
 
         {/* </section> : null} */}
-      </main> : null}
+      </main>
     </>
   )
 }
