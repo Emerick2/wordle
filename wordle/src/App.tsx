@@ -39,18 +39,18 @@ function App() {
       {/* {keyboardActivated==true ? <section className="keyboard"> */}
         
       <section className="keyboard">
-        {touche1.map((e) => (
+        {touche1.map((e, index) => (
           <>
-            <article className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
+            <article key={index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
               {e}
             </article>
           </>
         ))}
       </section>
       <section className="keyboard">
-        {touche2.map((e) => (
+        {touche2.map((e, index) => (
           <>
-            <article className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
+            <article key={index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
               {e}
             </article>
           </>
@@ -60,9 +60,9 @@ function App() {
         <article className='keyboardKey keyboardKeySuper'  onClick={(k) => { KeyboardEvent({character:"", deleteButton:false, enterButton:true}); }}>
           ⏎
         </article>
-        {touche3.map((e) => (
+        {touche3.map((e, index) => (
           <>
-            <article className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
+            <article key={index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
               {e}
             </article>
           </>
