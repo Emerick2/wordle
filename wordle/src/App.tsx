@@ -81,7 +81,7 @@ function App() {
   const [word, setWord] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [ligneId, setLigneId] = useState<number>(0);
+  const [lineId, setLineId] = useState<number>(0);
   const [characterId, setCharacterId] = useState<number>(0);
 
   const touche1 : string[] = ["a","z","e","r","t","y","u","i","o","p"];
@@ -91,9 +91,19 @@ function App() {
   const allKeys : string[] = [...touche1, ...touche2, ...touche3];
 
   const keyDownAction = (newCharacter : string, newDeleteButton : boolean, newEnterButton : boolean) => {
-    if (characterId < 5){
-      setAttempts(KeyboardEvent({ character: newCharacter, deleteButton: newDeleteButton, enterButton: newEnterButton, attempts:attempts, ligneId : ligneId, characterId : characterId }));
-      setCharacterId(characterId + 1);
+    if ((characterId < 5 || newDeleteButton) && !newEnterButton){
+      
+      setAttempts(KeyboardEvent({ character: newCharacter, deleteButton: newDeleteButton, enterButton: newEnterButton, attempts:attempts, ligneId : lineId, characterId : characterId }));
+      if (newDeleteButton){
+    		if (characterId>0){
+          setCharacterId(characterId - 1);
+        }
+      } else {      
+        setCharacterId(characterId + 1);
+      }
+    } if (newEnterButton && characterId >= 5 && lineId < 6) {
+      setLineId(lineId + 1);
+      setCharacterId(0);
     }
   }
 

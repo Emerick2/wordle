@@ -18,69 +18,6 @@ interface GridProps {
 
 
 export default function Grid({attempts} : GridProps) {
-  // const [attempts, setAttempts] = useState<AttemptProps[]>([
-  //   {
-  //     status: "pending" as const,
-  //     letters: [
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //     ],
-  //   },
-  //   {
-  //     status: "pending" as const,
-  //     letters: [
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //     ],
-  //   },
-  //   {
-  //     status: "pending" as const,
-  //     letters: [
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //     ],
-  //   },
-  //   {
-  //     status: "pending" as const,
-  //     letters: [
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //     ],
-  //   },
-  //   {
-  //     status: "pending" as const,
-  //     letters: [
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //     ],
-  //   },
-  //   {
-  //     status: "pending" as const,
-  //     letters: [
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //       { letter: "", status: "empty" as const },
-  //     ],
-  //   },
-  // ]);
-
   return (
     <section className="grid">
       {attempts.map((attempt, index) => (
@@ -95,8 +32,6 @@ export default function Grid({attempts} : GridProps) {
 }
 
 export function SetLetter(character : string, attempts : AttemptProps[], ligneId : number, characterId : number) : AttemptProps[]{
-  console.log("character : "+characterId);
-  console.log("ligne : "+ligneId);
   let newAttemps : AttemptProps[] = [];
   for (let i = 0; i < attempts.length; i++) {
     if (ligneId == i){
