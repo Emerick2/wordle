@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import Grid from "./components/Grid";
 import './App.css'
 import KeyboardEvent from "./Keyboard";
 
@@ -36,6 +37,8 @@ function App() {
 
   return (
     <>    
+      <main>
+      <Grid />
       {/* {keyboardActivated==true ? <section className="keyboard"> */}
         
       <section className="keyboard">
@@ -73,6 +76,7 @@ function App() {
       </section>
 
       {/* </section> : null} */}
+        </main
     </>
   )
 }
