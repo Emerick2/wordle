@@ -46,35 +46,36 @@ function App() {
   }, [keyboardActivated]);
 
 
-  useEffect(() => {
-    const callAPIWordle = async () => {
-      try {
-        const response = await fetch ( 'https://raw.githubusercontent.com/arbxz/wordle-api/main/src/data/words-fr.json');
-        
-        if (!response.ok){
-          throw new Error(`Erreur l'or de l'appel de l'API : ${response.status}`);
+    useEffect(() => {
+      const callAPIWordle = async () => {
+        try {
+          const response = await fetch ( 'https://raw.githubusercontent.com/arbxz/wordle-api/main/src/data/words-fr.json');
+          
+          if (!response.ok){
+            throw new Error(`Erreur l'or de l'appel de l'API : ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          let word = "azerty";
+
+          if (data != null && data.words != null){
+            word = data.words[RandomInt(0, data.words.length)];
+          }
+
+          setLoading(false);
+          setWord(word);
+          console.log(word);
+        } catch (erreur) {
+          console.error(`Erreur l'or de l'appel de l'API : ${erreur}`);
+          setLoading(false);
+          setWord("azerty");
         }
-        
-        const data = await response.json();
-        
-        let word = "azerty";
+      };
 
-        if (data != null && data.words != null){
-          word = data.words[RandomInt(0, data.words.length)];
-        }
-
-        setLoading(false);
-        setWord(word);
-        console.log(word);
-      } catch (erreur) {
-        console.error(`Erreur l'or de l'appel de l'API : ${erreur}`);
-        setLoading(false);
-        setWord("azerty");
-      }
-    };
-
-    callAPIWordle();
-  }, []);
+      callAPIWordle();
+    }, []);
+  
 
   return (
     <>    
@@ -94,7 +95,7 @@ function App() {
         <section className="keyboard">
           {touche2.map((e, index) => (
             <>
-              <article key={index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
+              <article key={touche1.length+index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
                 {e}
               </article>
             </>
@@ -106,7 +107,7 @@ function App() {
           </article>
           {touche3.map((e, index) => (
             <>
-              <article key={index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
+              <article key={touche1.length+touche2.length+index} className='keyboardKey'  onClick={(k) => { KeyboardEvent({character:e, deleteButton:false, enterButton:false}); }}>
                 {e}
               </article>
             </>
