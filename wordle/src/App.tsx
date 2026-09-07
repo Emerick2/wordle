@@ -192,7 +192,7 @@ function App() {
           {touche1.map((e, index) => (
             <>
               <article key={1000+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
-                {e}
+                <span>{e}</span>
               </article>
             </>
           ))}
@@ -201,24 +201,24 @@ function App() {
           {touche2.map((e, index) => (
             <>
               <article key={1000+touche1.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
-                {e}
+                <span>{e}</span>
               </article>
             </>
           ))}
         </section>
         <section className="keyboard">
           <article className='keyboardKey keyboardKeySuper'  onClick={(k) => { keyDownAction("", false, true); }}>
-            ⏎
+            <span>⏎</span>
           </article>
           {touche3.map((e, index) => (
             <>
               <article key={1000+touche1.length+touche2.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
-                {e}
+                <span>{e}</span>
               </article>
             </>
           ))}
           <article className='keyboardKey keyboardKeySuper' onClick={(k) => { keyDownAction("", true, false); }}>
-            ⌫
+            <span>⌫</span>
           </article>
         </section>
 
