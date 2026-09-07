@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import Grid from "./components/Grid";
 import './App.css'
-import KeyboardEvent from "./Keyboard";
+import KeyboardEvent from "./components/Keyboard";
 import type { AttemptProps } from "./components/Grid";
 
 let RandomInt = (min : number, max : number) => {
@@ -190,20 +190,16 @@ function App() {
           
         <section className="keyboard">
           {touche1.map((e, index) => (
-            <>
-              <article key={1000+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
-                <span>{e}</span>
-              </article>
-            </>
+            <article key={1000+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
+              <span>{e}</span>
+            </article>
           ))}
         </section>
         <section className="keyboard">
           {touche2.map((e, index) => (
-            <>
-              <article key={1000+touche1.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
-                <span>{e}</span>
-              </article>
-            </>
+            <article key={1000+touche1.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
+              <span>{e}</span>
+            </article>
           ))}
         </section>
         <section className="keyboard">
@@ -211,11 +207,9 @@ function App() {
             <span>⏎</span>
           </article>
           {touche3.map((e, index) => (
-            <>
-              <article key={1000+touche1.length+touche2.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
-                <span>{e}</span>
-              </article>
-            </>
+            <article key={1000+touche1.length+touche2.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
+              <span>{e}</span>
+            </article>
           ))}
           <article className='keyboardKey keyboardKeySuper' onClick={(k) => { keyDownAction("", true, false); }}>
             <span>⌫</span>
