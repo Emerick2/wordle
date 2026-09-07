@@ -83,6 +83,9 @@ function App() {
   const [lineId, setLineId] = useState<number>(0);
   const [characterId, setCharacterId] = useState<number>(0);
 
+  const [victory, setVictory] = useState<boolean>(false);
+  const [gameOver, setGameOver] = useState<boolean>(false);
+
   const touche1 : string[] = ["a","z","e","r","t","y","u","i","o","p"];
   const touche2 : string[] = ["q","s","d","f","g","h","j","k","l","m"];
   const touche3 : string[] = ["w","x","c","v","b","n"];
@@ -90,6 +93,8 @@ function App() {
   const allKeys : string[] = [...touche1, ...touche2, ...touche3];
 
   const keyDownAction = (newCharacter : string, newDeleteButton : boolean, newEnterButton : boolean) => {
+    if (victory || gameOver) return;
+
     if ((characterId < 5 || newDeleteButton) && !newEnterButton){
       
       setAttempts(KeyboardEvent({ character: newCharacter, deleteButton: newDeleteButton, enterButton: newEnterButton, attempts:attempts, ligneId : lineId, characterId : characterId }));
@@ -185,7 +190,10 @@ function App() {
     if (lineIdentifier >= attempts.length) return;
 
     // const wordSearch = word;
-    const wordSearch = "azzer";
+    let wordSearch = "azert";
+    wordSearch = wordSearch.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    
+    let numberOfCorrectAnswers = 0;
 
     setAttempts((prevAttempts) => {
       const newAttempts = [...prevAttempts];
@@ -201,6 +209,7 @@ function App() {
       updatedLetters.forEach((item, i) => {
         if (item.letter === wordSearch[i]) {
           item.status = "correct";
+          numberOfCorrectAnswers+=1;
           const indexInPossible = letterPossible.indexOf(item.letter);
           if (indexInPossible !== -1) {
             letterPossible.splice(indexInPossible, 1);
@@ -224,6 +233,12 @@ function App() {
         letters: updatedLetters,
       };
 
+      if (numberOfCorrectAnswers >= 4) {
+        setVictory(true);
+      } else if (lineIdentifier >= 5) {
+        setGameOver(true);
+      }
+
       return newAttempts;
     });
   };
@@ -232,6 +247,8 @@ function App() {
     <>    
       <main>
         {loading == true ? <p>Chargement en cours...</p> : null}
+        {victory == true ? <h2>Vous avez gagner !</h2> : null}
+        {gameOver == true ? <h2>Vous avez perdu...</h2> : null}
 
         <Grid attempts={attempts} />
         {/* {keyboardActivated==true ? <section className="keyboard"> */}
