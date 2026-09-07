@@ -1,101 +1,22 @@
 import { useEffect, useState } from "react";
 import Attempt from "./Attempt";
+import type { Status } from "./Case";
 
-export default function Grid() {
-  const [word, setWord] = useState("");
-  const [loading, setLoading] = useState(true);
+export interface AttemptProps {
+  status: Status;
+  letters: LetterProps[];
+}
 
-  const attempts = [
-    {
-      status: "pending" as const,
-      letters: [
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-      ],
-    },
-    {
-      status: "pending" as const,
-      letters: [
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-      ],
-    },
-    {
-      status: "pending" as const,
-      letters: [
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-      ],
-    },
-    {
-      status: "pending" as const,
-      letters: [
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-      ],
-    },
-    {
-      status: "pending" as const,
-      letters: [
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-      ],
-    },
-    {
-      status: "pending" as const,
-      letters: [
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-        { letter: "", status: "empty" as const },
-      ],
-    },
-  ];
+export interface LetterProps{
+  letter : string;
+  status : Status;
+}
 
-  useEffect(() => {
-    fetch("http://localhost:3000/api/word?lang=fr", {
-      headers: {
-        "x-api-key": "Abc123",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setWord(data.word);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setLoading(false);
-      });
-  }, []);
+interface GridProps {
+  attempts : AttemptProps[];
+}
 
-  if (loading) {
-    return (
-      <div className="loading">
-        <div className="spinner"></div>
-        <p>Chargement du mot...</p>
-      </div>
-    );
-  }
-
-  console.log(word);
-
+export default function Grid({attempts} : GridProps) {
   return (
     <section className="grid">
       {attempts.map((attempt, index) => (
@@ -108,3 +29,27 @@ export default function Grid() {
     </section>
   );
 }
+
+export function SetLetter(character : string, attempts : AttemptProps[], ligneId : number, characterId : number) : AttemptProps[]{
+  let newAttemps : AttemptProps[] = [];
+  for (let i = 0; i < attempts.length; i++) {
+    if (ligneId == i){
+      let valeurAttemps : AttemptProps = {
+        ...attempts[i],
+        letters: attempts[i].letters.map((k, index) => {
+          if (index === characterId) {
+            return { ...k, letter: character };
+          }
+          return { ...k };
+        })
+      };
+
+      newAttemps.push(valeurAttemps);
+    } else {
+      newAttemps.push(attempts[i]);
+    }
+  }
+
+  return newAttemps;
+}
+
