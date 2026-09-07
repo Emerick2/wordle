@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import Grid from "./components/Grid";
 import './App.css'
 import KeyboardEvent from "./components/Keyboard";
-import type { AttemptProps } from "./components/Grid";
+import type { AttemptProps, LetterProps } from "./components/Grid";
 
 let RandomInt = (min : number, max : number) => {
     if (max < min) {
@@ -101,6 +101,7 @@ function App() {
         setCharacterId(characterId + 1);
       }
     } if (newEnterButton && characterId >= 5 && lineId < 6) {
+      verificationMot(lineId)
       setLineId(lineId + 1);
       setCharacterId(0);
     }
@@ -179,6 +180,53 @@ function App() {
         setLoading(false);
       });
   }, []);
+
+  const verificationMot = (lineIdentifier: number) => {
+    if (lineIdentifier >= attempts.length) return;
+
+    // const wordSearch = word;
+    const wordSearch = "azzer";
+
+    setAttempts((prevAttempts) => {
+      const newAttempts = [...prevAttempts];
+      const currentLine = newAttempts[lineIdentifier];
+
+      const letterPossible = wordSearch.split("");
+
+      const updatedLetters = currentLine.letters.map((item) => ({
+        ...item,
+        status: "absent" as LetterProps["status"],
+      }));
+
+      updatedLetters.forEach((item, i) => {
+        if (item.letter === wordSearch[i]) {
+          item.status = "correct";
+          const indexInPossible = letterPossible.indexOf(item.letter);
+          if (indexInPossible !== -1) {
+            letterPossible.splice(indexInPossible, 1);
+          }
+        }
+      });
+
+      updatedLetters.forEach((item) => {
+        if (item.status !== "correct") {
+          const indexInPossible = letterPossible.indexOf(item.letter);
+          if (indexInPossible !== -1) {
+            item.status = "misplaced";
+            letterPossible.splice(indexInPossible, 1);
+          }
+        }
+      });
+
+      newAttempts[lineIdentifier] = {
+        ...currentLine,
+        status: "empty",
+        letters: updatedLetters,
+      };
+
+      return newAttempts;
+    });
+  };
 
   return (
     <>    
