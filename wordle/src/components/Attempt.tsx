@@ -14,13 +14,13 @@ interface AttemptProps {
 export default function Attempt({ letters, status }: AttemptProps) {
   return (
     <article className={`attempt ${status}`}>
-        {letters.map((item, index) => (
+      {letters.map((item, index) => (
         <Case
-            key={index}
-            letter={item.letter}
-            status={item.status}
+          key={index}
+          letter={item.letter}
+          status={item.status}
         />
-        ))}
-        </article>
-    );
+      ))}
+    </article>
+  );
 }

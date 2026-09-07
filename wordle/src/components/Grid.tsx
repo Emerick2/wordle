@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Attempt from "./Attempt";
 import type { Status } from "./Case";
 
@@ -14,8 +15,6 @@ export interface LetterProps{
 interface GridProps {
   attempts : AttemptProps[];
 }
-
-
 
 export default function Grid({attempts} : GridProps) {
   return (
