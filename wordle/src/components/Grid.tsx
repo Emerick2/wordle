@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { ComponentProps } from "react";
 import Attempt from "./Attempt";
 import type { Status } from "./Case";
 
@@ -23,7 +24,7 @@ export default function Grid({attempts} : GridProps) {
         <Attempt
           key={index}
           letters={attempt.letters}
-          status={attempt.status}
+          status={attempt.status as ComponentProps<typeof Attempt>["status"]}
         />
       ))}
     </section>
