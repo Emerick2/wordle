@@ -1,4 +1,3 @@
-import {useState} from "react";
 import { letterNotValidExport } from "../App";
 
 const KEY_ROWS = {
