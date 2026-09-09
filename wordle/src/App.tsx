@@ -3,28 +3,20 @@ import "./App.css";
 import Grid from "./components/Grid";
 import Keyboard from "./components/Keyboard";
 import Modal from "./components/Modal";
-
-export type LetterStatus = "empty" | "pending" | "correct" | "misplaced" | "absent";
-
-export interface LetterProps {
-  letter: string;
-  status: LetterStatus;
-}
-
-export interface AttemptProps {
-  status: "pending" | "empty";
-  letters: LetterProps[];
-}
+import type { CaseProps } from "./components/Case";
+import type { AttemptProps } from "./components/Grid";
 
 const WORD_LENGTH = 5;
 const MAX_ATTEMPTS = 6;
 const FALLBACK_WORDS = ["salon", "chien", "train", "porte", "pomme", "fleur", "ombre", "livre"];
+export let letterNotValidExport : string[] = []
 
 const createEmptyAttempt = (): AttemptProps => ({
   status: "pending",
   letters: Array.from({ length: WORD_LENGTH }, () => ({
     letter: "",
     status: "empty",
+    notPossibleLetter: false
   })),
 });
 
@@ -34,11 +26,12 @@ const createEmptyAttempts = () =>
 const normalizeWord = (value: string) =>
   value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-const evaluateGuess = (guess: string[], target: string): LetterProps[] => {
+const evaluateGuess = (guess: string[], target: string): CaseProps[] => {
   const remaining = [...target.split("")];
-  const letters: LetterProps[] = guess.map((letter) => ({
+  const letters: CaseProps[] = guess.map((letter) => ({
     letter,
     status: "absent",
+    notPossibleLetter: false
   }));
 
   letters.forEach((item, index) => {
@@ -72,6 +65,9 @@ function App() {
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [rulesOpen, setRulesOpen] = useState<boolean>(true);
   const [endGameOpen, setEndGameOpen] = useState<boolean>(false);
+  const [letterNotValid, setLetterNotValid] = useState<string[]>([]);
+
+  letterNotValidExport = [...letterNotValid]
 
   const allKeys = [
     "a", "z", "e", "r", "t", "y", "u", "i", "o", "p",
@@ -114,7 +110,7 @@ function App() {
     setAttempts((previousAttempts) => {
       const nextAttempts = [...previousAttempts];
       const currentLine = [...nextAttempts[lineId].letters];
-      currentLine[characterId - 1] = { letter: "", status: "empty" };
+      currentLine[characterId - 1] = { letter: "", status: "empty"};
       nextAttempts[lineId] = { ...nextAttempts[lineId], letters: currentLine };
       return nextAttempts;
     });
@@ -150,6 +146,8 @@ function App() {
     const nextLetters = evaluateGuess(guess, target);
     const isVictory = nextLetters.every((item) => item.status === "correct");
 
+    
+    
     setAttempts((previousAttempts) => {
       const nextAttempts = [...previousAttempts];
       nextAttempts[lineId] = {
@@ -158,21 +156,30 @@ function App() {
       };
       return nextAttempts;
     });
-
+    
     if (isVictory) {
       setVictory(true);
       return;
     }
-
+    
     if (lineId >= MAX_ATTEMPTS - 1) {
       setGameOver(true);
       return;
     }
-
+    
     setLineId((previous) => previous + 1);
     setCharacterId(0);
-  };
 
+
+    const newTable : string[] = [];
+    nextLetters.forEach((item) => {
+      if (item.status === "absent" && word.includes(item.letter) == false) {
+        newTable.push(item.letter)
+      }
+    });
+    setLetterNotValid([...letterNotValid, ...newTable]);
+  };
+  
   const keyDownAction = (newCharacter: string, newDeleteButton: boolean, newEnterButton: boolean) => {
     if (newEnterButton) {
       submitGuess();
@@ -184,7 +191,9 @@ function App() {
       return;
     }
 
-    addLetter(newCharacter);
+    if (letterNotValid.includes(newCharacter) == false){
+      addLetter(newCharacter);
+    }
   };
 
   const handleKeyboardInput = (value: string | "ENTER" | "BACKSPACE") => {

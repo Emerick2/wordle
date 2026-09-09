@@ -5,12 +5,13 @@ export type Status =
   | "misplaced"
   | "absent";
 
-interface CaseProps {
+export interface CaseProps {
   letter: string;
   status: Status;
 }
 
 export default function Case({ letter, status }: CaseProps) {
+
   return (
     <article className={`case ${status}`}>
       {letter}

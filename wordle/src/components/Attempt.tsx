@@ -1,15 +1,5 @@
-import type { Status } from "./Case";
 import Case from "./Case";
-
-type AttemptStatus = "pending" | "validated" | "empty";
-
-interface AttemptProps {
-  letters: {
-    letter: string;
-    status: Status;
-  }[];
-  status: AttemptStatus;
-}
+import type { AttemptProps } from "./Grid";
 
 export default function Attempt({ letters, status }: AttemptProps) {
   return (

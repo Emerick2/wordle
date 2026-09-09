@@ -1,3 +1,6 @@
+import {useState} from "react";
+import { letterNotValidExport } from "../App";
+
 const KEY_ROWS = {
   first: ["a", "z", "e", "r", "t", "y", "u", "i", "o", "p"],
   second: ["q", "s", "d", "f", "g", "h", "j", "k", "l", "m"],
@@ -24,7 +27,7 @@ export default function Keyboard({ onKeyPress, disabled = false }: KeyboardProps
         {KEY_ROWS.first.map((letter, index) => (
           <article
             key={1000 + index}
-            className="keyboardKey"
+            className={letterNotValidExport.includes(letter) ? "keyboardKey possibleLetterText" : "keyboardKey"}
             onClick={() => handlePress(letter)}
           >
             <span>{letter}</span>
@@ -36,7 +39,7 @@ export default function Keyboard({ onKeyPress, disabled = false }: KeyboardProps
         {KEY_ROWS.second.map((letter, index) => (
           <article
             key={2000 + index}
-            className="keyboardKey"
+            className={letterNotValidExport.includes(letter) ? "keyboardKey possibleLetterText" : "keyboardKey"}
             onClick={() => handlePress(letter)}
           >
             <span>{letter}</span>
@@ -55,7 +58,7 @@ export default function Keyboard({ onKeyPress, disabled = false }: KeyboardProps
         {KEY_ROWS.third.map((letter, index) => (
           <article
             key={3000 + index}
-            className="keyboardKey"
+            className={letterNotValidExport.includes(letter) ? "keyboardKey possibleLetterText" : "keyboardKey"}
             onClick={() => handlePress(letter)}
           >
             <span>{letter}</span>
