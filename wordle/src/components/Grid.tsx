@@ -1,11 +1,9 @@
 import Attempt from "./Attempt";
 import type { Status } from "./Case";
 
-export type LetterStatus = Status;
-
 export interface LetterProps {
   letter: string;
-  status: LetterStatus;
+  status: Status;
 }
 
 export interface AttemptProps {

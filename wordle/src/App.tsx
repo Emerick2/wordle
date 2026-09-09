@@ -3,12 +3,11 @@ import "./App.css";
 import Grid from "./components/Grid";
 import Keyboard from "./components/Keyboard";
 import Modal from "./components/Modal";
-
-export type LetterStatus = "empty" | "pending" | "correct" | "misplaced" | "absent";
+import type { Status } from "./components/Case";
 
 export interface LetterProps {
   letter: string;
-  status: LetterStatus;
+  status: Status;
 }
 
 export interface AttemptProps {
