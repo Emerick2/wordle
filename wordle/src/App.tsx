@@ -15,6 +15,7 @@ const createEmptyAttempt = (): AttemptProps => ({
   letters: Array.from({ length: WORD_LENGTH }, () => ({
     letter: "",
     status: "empty",
+    notPossibleLetter: false
   })),
 });
 
@@ -29,6 +30,7 @@ const evaluateGuess = (guess: string[], target: string): CaseProps[] => {
   const letters: CaseProps[] = guess.map((letter) => ({
     letter,
     status: "absent",
+    notPossibleLetter: false
   }));
 
   letters.forEach((item, index) => {
@@ -62,6 +64,7 @@ function App() {
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [rulesOpen, setRulesOpen] = useState<boolean>(true);
   const [endGameOpen, setEndGameOpen] = useState<boolean>(false);
+  const [letterNotValid, setLetterNotValid] = useState<string[]>([]);
 
   const allKeys = [
     "a", "z", "e", "r", "t", "y", "u", "i", "o", "p",
@@ -104,7 +107,7 @@ function App() {
     setAttempts((previousAttempts) => {
       const nextAttempts = [...previousAttempts];
       const currentLine = [...nextAttempts[lineId].letters];
-      currentLine[characterId - 1] = { letter: "", status: "empty" };
+      currentLine[characterId - 1] = { letter: "", status: "empty"};
       nextAttempts[lineId] = { ...nextAttempts[lineId], letters: currentLine };
       return nextAttempts;
     });
@@ -140,6 +143,8 @@ function App() {
     const nextLetters = evaluateGuess(guess, target);
     const isVictory = nextLetters.every((item) => item.status === "correct");
 
+    
+    
     setAttempts((previousAttempts) => {
       const nextAttempts = [...previousAttempts];
       nextAttempts[lineId] = {
@@ -148,21 +153,28 @@ function App() {
       };
       return nextAttempts;
     });
-
+    
     if (isVictory) {
       setVictory(true);
       return;
     }
-
+    
     if (lineId >= MAX_ATTEMPTS - 1) {
       setGameOver(true);
       return;
     }
-
+    
     setLineId((previous) => previous + 1);
     setCharacterId(0);
-  };
 
+
+    nextLetters.forEach((item) => {
+      if (item.status === "absent" && word.includes(item.letter) == false) {
+        setLetterNotValid([...letterNotValid, item.letter]);
+      }
+    });
+  };
+  
   const keyDownAction = (newCharacter: string, newDeleteButton: boolean, newEnterButton: boolean) => {
     if (newEnterButton) {
       submitGuess();
@@ -174,7 +186,10 @@ function App() {
       return;
     }
 
-    addLetter(newCharacter);
+    console.log(letterNotValid)
+    if (letterNotValid.includes(newCharacter) == false){
+      addLetter(newCharacter);
+    }
   };
 
   const handleKeyboardInput = (value: string | "ENTER" | "BACKSPACE") => {

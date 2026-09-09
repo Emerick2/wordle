@@ -1,3 +1,5 @@
+import {useState} from "react";
+
 const KEY_ROWS = {
   first: ["a", "z", "e", "r", "t", "y", "u", "i", "o", "p"],
   second: ["q", "s", "d", "f", "g", "h", "j", "k", "l", "m"],
@@ -12,6 +14,8 @@ export interface KeyboardProps {
 }
 
 export default function Keyboard({ onKeyPress, disabled = false }: KeyboardProps) {
+  const [letterNotValid, setLetterNotValid] = useState<string[]>([]);
+
   const handlePress = (value: KeyboardInput) => {
     if (!disabled) {
       onKeyPress(value);
@@ -24,7 +28,7 @@ export default function Keyboard({ onKeyPress, disabled = false }: KeyboardProps
         {KEY_ROWS.first.map((letter, index) => (
           <article
             key={1000 + index}
-            className="keyboardKey"
+            className={letterNotValid.includes(letter) ? "keyboardKey possibleLetterText" : "keyboardKey"}
             onClick={() => handlePress(letter)}
           >
             <span>{letter}</span>
@@ -36,7 +40,7 @@ export default function Keyboard({ onKeyPress, disabled = false }: KeyboardProps
         {KEY_ROWS.second.map((letter, index) => (
           <article
             key={2000 + index}
-            className="keyboardKey"
+            className={letterNotValid.includes(letter) ? "keyboardKey possibleLetterText" : "keyboardKey"}
             onClick={() => handlePress(letter)}
           >
             <span>{letter}</span>
@@ -55,7 +59,7 @@ export default function Keyboard({ onKeyPress, disabled = false }: KeyboardProps
         {KEY_ROWS.third.map((letter, index) => (
           <article
             key={3000 + index}
-            className="keyboardKey"
+            className={letterNotValid.includes(letter) ? "keyboardKey possibleLetterText" : "keyboardKey"}
             onClick={() => handlePress(letter)}
           >
             <span>{letter}</span>

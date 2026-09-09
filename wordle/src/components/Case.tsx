@@ -11,6 +11,7 @@ export interface CaseProps {
 }
 
 export default function Case({ letter, status }: CaseProps) {
+
   return (
     <article className={`case ${status}`}>
       {letter}
