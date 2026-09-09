@@ -9,6 +9,7 @@ import type { AttemptProps } from "./components/Grid";
 const WORD_LENGTH = 5;
 const MAX_ATTEMPTS = 6;
 const FALLBACK_WORDS = ["salon", "chien", "train", "porte", "pomme", "fleur", "ombre", "livre"];
+export let letterNotValidExport : string[] = []
 
 const createEmptyAttempt = (): AttemptProps => ({
   status: "pending",
@@ -65,6 +66,8 @@ function App() {
   const [rulesOpen, setRulesOpen] = useState<boolean>(true);
   const [endGameOpen, setEndGameOpen] = useState<boolean>(false);
   const [letterNotValid, setLetterNotValid] = useState<string[]>([]);
+
+  letterNotValidExport = [...letterNotValid]
 
   const allKeys = [
     "a", "z", "e", "r", "t", "y", "u", "i", "o", "p",
@@ -168,11 +171,13 @@ function App() {
     setCharacterId(0);
 
 
+    const newTable : string[] = [];
     nextLetters.forEach((item) => {
       if (item.status === "absent" && word.includes(item.letter) == false) {
-        setLetterNotValid([...letterNotValid, item.letter]);
+        newTable.push(item.letter)
       }
     });
+    setLetterNotValid([...letterNotValid, ...newTable]);
   };
   
   const keyDownAction = (newCharacter: string, newDeleteButton: boolean, newEnterButton: boolean) => {
@@ -186,7 +191,6 @@ function App() {
       return;
     }
 
-    console.log(letterNotValid)
     if (letterNotValid.includes(newCharacter) == false){
       addLetter(newCharacter);
     }
