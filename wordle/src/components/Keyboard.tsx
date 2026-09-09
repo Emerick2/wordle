@@ -1,5 +1,5 @@
-import {SetLetter} from "./components/Grid";
-import type { AttemptProps } from "./components/Grid";
+import {SetLetter} from "./Grid";
+import type { AttemptProps } from "./Grid";
 
 export interface KeyboardProps {
     character : string;
