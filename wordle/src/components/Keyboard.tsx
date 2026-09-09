@@ -1,29 +1,74 @@
-import {SetLetter} from "./Grid";
-import type { AttemptProps } from "./Grid";
+const KEY_ROWS = {
+  first: ["a", "z", "e", "r", "t", "y", "u", "i", "o", "p"],
+  second: ["q", "s", "d", "f", "g", "h", "j", "k", "l", "m"],
+  third: ["w", "x", "c", "v", "b", "n"],
+} as const;
+
+export type KeyboardInput = string | "ENTER" | "BACKSPACE";
 
 export interface KeyboardProps {
-    character : string;
-	deleteButton : boolean;
-	enterButton : boolean;
-	attempts : AttemptProps[];
-	ligneId : number;
-	characterId : number;
+  onKeyPress: (value: KeyboardInput) => void;
+  disabled?: boolean;
 }
 
-export default function PressAKey({character, deleteButton, enterButton,  attempts, ligneId, characterId} : KeyboardProps) : AttemptProps[] {
-	if (deleteButton){
-		if (characterId>0){
-		    return SetLetter(character, attempts, ligneId, characterId-1);
-		} else {
-			return attempts;
-		}
-	}
+export default function Keyboard({ onKeyPress, disabled = false }: KeyboardProps) {
+  const handlePress = (value: KeyboardInput) => {
+    if (!disabled) {
+      onKeyPress(value);
+    }
+  };
 
-	return SetLetter(character, attempts, ligneId, characterId);
-	// return(
-	// 	<>
-	// 	<p>{character} {deleteButton} {enterButton}</p>
-		
-	// 	</>
-	// )
+  return (
+    <>
+      <section className="keyboard">
+        {KEY_ROWS.first.map((letter, index) => (
+          <article
+            key={1000 + index}
+            className="keyboardKey"
+            onClick={() => handlePress(letter)}
+          >
+            <span>{letter}</span>
+          </article>
+        ))}
+      </section>
+
+      <section className="keyboard">
+        {KEY_ROWS.second.map((letter, index) => (
+          <article
+            key={2000 + index}
+            className="keyboardKey"
+            onClick={() => handlePress(letter)}
+          >
+            <span>{letter}</span>
+          </article>
+        ))}
+      </section>
+
+      <section className="keyboard">
+        <article
+          className="keyboardKey keyboardKeySuper"
+          onClick={() => handlePress("ENTER")}
+        >
+          <span>⏎</span>
+        </article>
+
+        {KEY_ROWS.third.map((letter, index) => (
+          <article
+            key={3000 + index}
+            className="keyboardKey"
+            onClick={() => handlePress(letter)}
+          >
+            <span>{letter}</span>
+          </article>
+        ))}
+
+        <article
+          className="keyboardKey keyboardKeySuper"
+          onClick={() => handlePress("BACKSPACE")}
+        >
+          <span>⌫</span>
+        </article>
+      </section>
+    </>
+  );
 }

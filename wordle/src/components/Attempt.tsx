@@ -1,7 +1,7 @@
-import Case from "./Case";
 import type { Status } from "./Case";
+import Case from "./Case";
 
-type AttemptStatus = "pending" | "validated";
+type AttemptStatus = "pending" | "validated" | "empty";
 
 interface AttemptProps {
   letters: {

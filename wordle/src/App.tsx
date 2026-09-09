@@ -1,175 +1,87 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from "react";
+import "./App.css";
 import Grid from "./components/Grid";
-import './App.css'
-import KeyboardEvent from "./components/Keyboard";
-import type { AttemptProps, LetterProps } from "./components/Grid";
+import Keyboard from "./components/Keyboard";
+import Modal from "./components/Modal";
 
-let RandomInt = (min : number, max : number) => {
-    if (max < min) {
-        return min;
-    }
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+export type LetterStatus = "empty" | "pending" | "correct" | "misplaced" | "absent";
+
+export interface LetterProps {
+  letter: string;
+  status: LetterStatus;
 }
 
-function App() {
-  const [attempts, setAttempts] = useState<AttemptProps[]>([
-      {
-        status: "pending" as const,
-        letters: [
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-        ],
-      },
-      {
-        status: "pending" as const,
-        letters: [
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-        ],
-      },
-      {
-        status: "pending" as const,
-        letters: [
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-        ],
-      },
-      {
-        status: "pending" as const,
-        letters: [
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-        ],
-      },
-      {
-        status: "pending" as const,
-        letters: [
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-        ],
-      },
-      {
-        status: "pending" as const,
-        letters: [
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-          { letter: "", status: "empty" as const },
-        ],
-      },
-  ]);
-  
-  const [keyboardActivated, setKeyboardActivated] = useState<boolean>(true);
+export interface AttemptProps {
+  status: "pending" | "empty";
+  letters: LetterProps[];
+}
 
+const WORD_LENGTH = 5;
+const MAX_ATTEMPTS = 6;
+const FALLBACK_WORDS = ["salon", "chien", "train", "porte", "pomme", "fleur", "ombre", "livre"];
+
+const createEmptyAttempt = (): AttemptProps => ({
+  status: "pending",
+  letters: Array.from({ length: WORD_LENGTH }, () => ({
+    letter: "",
+    status: "empty",
+  })),
+});
+
+const createEmptyAttempts = () =>
+  Array.from({ length: MAX_ATTEMPTS }, () => createEmptyAttempt());
+
+const normalizeWord = (value: string) =>
+  value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+const evaluateGuess = (guess: string[], target: string): LetterProps[] => {
+  const remaining = [...target.split("")];
+  const letters: LetterProps[] = guess.map((letter) => ({
+    letter,
+    status: "absent",
+  }));
+
+  letters.forEach((item, index) => {
+    if (item.letter === target[index]) {
+      item.status = "correct";
+      const position = remaining.indexOf(item.letter);
+      if (position !== -1) remaining.splice(position, 1);
+    }
+  });
+
+  letters.forEach((item) => {
+    if (item.status === "correct") return;
+
+    const position = remaining.indexOf(item.letter);
+    if (position !== -1) {
+      item.status = "misplaced";
+      remaining.splice(position, 1);
+    }
+  });
+
+  return letters;
+};
+
+function App() {
+  const [attempts, setAttempts] = useState<AttemptProps[]>(() => createEmptyAttempts());
   const [word, setWord] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
-
   const [lineId, setLineId] = useState<number>(0);
   const [characterId, setCharacterId] = useState<number>(0);
-
   const [victory, setVictory] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
+  const [rulesOpen, setRulesOpen] = useState<boolean>(true);
+  const [endGameOpen, setEndGameOpen] = useState<boolean>(false);
 
-  const touche1 : string[] = ["a","z","e","r","t","y","u","i","o","p"];
-  const touche2 : string[] = ["q","s","d","f","g","h","j","k","l","m"];
-  const touche3 : string[] = ["w","x","c","v","b","n"];
-
-  const allKeys : string[] = [...touche1, ...touche2, ...touche3];
-
-  const keyDownAction = (newCharacter : string, newDeleteButton : boolean, newEnterButton : boolean) => {
-    if (victory || gameOver) return;
-
-    if ((characterId < 5 || newDeleteButton) && !newEnterButton){
-      
-      setAttempts(KeyboardEvent({ character: newCharacter, deleteButton: newDeleteButton, enterButton: newEnterButton, attempts:attempts, ligneId : lineId, characterId : characterId }));
-      if (newDeleteButton){
-    		if (characterId>0){
-          setCharacterId(characterId - 1);
-        }
-      } else {      
-        setCharacterId(characterId + 1);
-      }
-    } if (newEnterButton && characterId >= 5 && lineId < 6) {
-      verificationMot(lineId)
-      setLineId(lineId + 1);
-      setCharacterId(0);
-    }
-  }
+  const allKeys = [
+    "a", "z", "e", "r", "t", "y", "u", "i", "o", "p",
+    "q", "s", "d", "f", "g", "h", "j", "k", "l", "m",
+    "w", "x", "c", "v", "b", "n",
+  ];
 
   useEffect(() => {
-    const keyDown = (event : globalThis.KeyboardEvent) => {
-      if (!keyboardActivated) return;
+    const fallbackWord = FALLBACK_WORDS[Math.floor(Math.random() * FALLBACK_WORDS.length)];
 
-      const key = event.key.toLowerCase();
-
-      if (key === 'enter') {
-        keyDownAction("", false, true);
-      }
-      else if (key === 'backspace') {
-        keyDownAction("", true, false);
-      }
-      else if (allKeys.includes(key)) {
-        keyDownAction(key, false, false);
-      }
-    };
-    window.addEventListener('keydown', keyDown);
-
-    return () => {
-      window.removeEventListener("keydown", keyDown);
-    };
-  }, [keyboardActivated, characterId, lineId, attempts]);
-
-
-    // version 1 de l'API :
-    // useEffect(() => {
-    //   const callAPIWordle = async () => {
-    //     try {
-    //       const response = await fetch ( 'https://raw.githubusercontent.com/arbxz/wordle-api/main/src/data/words-fr.json');
-          
-    //       if (!response.ok){
-    //         throw new Error(`Erreur l'or de l'appel de l'API : ${response.status}`);
-    //       }
-          
-    //       const data = await response.json();
-          
-    //       let word = "azerty";
-
-    //       if (data != null && data.words != null){
-    //         word = data.words[RandomInt(0, data.words.length)];
-    //       }
-
-    //       setLoading(false);
-    //       setWord(word);
-    //       console.log(word);
-    //     } catch (erreur) {
-    //       console.error(`Erreur l'or de l'appel de l'API : ${erreur}`);
-    //       setLoading(false);
-    //       setWord("azerty");
-    //     }
-    //   };
-
-    //   callAPIWordle();
-    // }, []);
-
-
-  // version 2 de l'API :
-  useEffect(() => {
     fetch("http://localhost:3000/api/word?lang=fr", {
       headers: {
         "x-api-key": "Abc123",
@@ -177,114 +89,192 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setWord(data.word);
+        const safeWord = typeof data.word === "string" ? normalizeWord(data.word) : "";
+
+        if (safeWord.length !== WORD_LENGTH || !/^[a-z]+$/.test(safeWord)) {
+          console.error("Mot API invalide reçu :", data.word);
+          setWord(fallbackWord);
+          setLoading(false);
+          return;
+        }
+
+        setWord(safeWord);
         setLoading(false);
       })
       .catch((error) => {
         console.error(error);
+        setWord(fallbackWord);
         setLoading(false);
       });
   }, []);
 
-  const verificationMot = (lineIdentifier: number) => {
-    if (lineIdentifier >= attempts.length) return;
+  const clearLetter = () => {
+    if (characterId === 0 || victory || gameOver) return;
 
-    // const wordSearch = word;
-    let wordSearch = "azert";
-    wordSearch = wordSearch.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    
-    let numberOfCorrectAnswers = 0;
-
-    setAttempts((prevAttempts) => {
-      const newAttempts = [...prevAttempts];
-      const currentLine = newAttempts[lineIdentifier];
-
-      const letterPossible = wordSearch.split("");
-
-      const updatedLetters = currentLine.letters.map((item) => ({
-        ...item,
-        status: "absent" as LetterProps["status"],
-      }));
-
-      updatedLetters.forEach((item, i) => {
-        if (item.letter === wordSearch[i]) {
-          item.status = "correct";
-          numberOfCorrectAnswers+=1;
-          const indexInPossible = letterPossible.indexOf(item.letter);
-          if (indexInPossible !== -1) {
-            letterPossible.splice(indexInPossible, 1);
-          }
-        }
-      });
-
-      updatedLetters.forEach((item) => {
-        if (item.status !== "correct") {
-          const indexInPossible = letterPossible.indexOf(item.letter);
-          if (indexInPossible !== -1) {
-            item.status = "misplaced";
-            letterPossible.splice(indexInPossible, 1);
-          }
-        }
-      });
-
-      newAttempts[lineIdentifier] = {
-        ...currentLine,
-        status: "empty",
-        letters: updatedLetters,
-      };
-
-      if (numberOfCorrectAnswers >= 4) {
-        setVictory(true);
-      } else if (lineIdentifier >= 5) {
-        setGameOver(true);
-      }
-
-      return newAttempts;
+    setAttempts((previousAttempts) => {
+      const nextAttempts = [...previousAttempts];
+      const currentLine = [...nextAttempts[lineId].letters];
+      currentLine[characterId - 1] = { letter: "", status: "empty" };
+      nextAttempts[lineId] = { ...nextAttempts[lineId], letters: currentLine };
+      return nextAttempts;
     });
+
+    setCharacterId((previous) => Math.max(previous - 1, 0));
   };
 
+  const addLetter = (newCharacter: string) => {
+    if (characterId >= WORD_LENGTH || victory || gameOver) return;
+
+    const normalizedCharacter = newCharacter.toLowerCase();
+    if (!normalizedCharacter || !allKeys.includes(normalizedCharacter)) return;
+
+    setAttempts((previousAttempts) => {
+      const nextAttempts = [...previousAttempts];
+      const currentLine = [...nextAttempts[lineId].letters];
+      currentLine[characterId] = { letter: normalizedCharacter, status: "pending" };
+      nextAttempts[lineId] = { ...nextAttempts[lineId], letters: currentLine };
+      return nextAttempts;
+    });
+
+    setCharacterId((previous) => previous + 1);
+  };
+
+  const submitGuess = () => {
+    if (loading || characterId < WORD_LENGTH || victory || gameOver || !word) return;
+
+    const currentLine = attempts[lineId];
+    if (!currentLine) return;
+
+    const guess = currentLine.letters.map((item) => item.letter);
+    const target = normalizeWord(word);
+    const nextLetters = evaluateGuess(guess, target);
+    const isVictory = nextLetters.every((item) => item.status === "correct");
+
+    setAttempts((previousAttempts) => {
+      const nextAttempts = [...previousAttempts];
+      nextAttempts[lineId] = {
+        ...nextAttempts[lineId],
+        letters: nextLetters,
+      };
+      return nextAttempts;
+    });
+
+    if (isVictory) {
+      setVictory(true);
+      return;
+    }
+
+    if (lineId >= MAX_ATTEMPTS - 1) {
+      setGameOver(true);
+      return;
+    }
+
+    setLineId((previous) => previous + 1);
+    setCharacterId(0);
+  };
+
+  const keyDownAction = (newCharacter: string, newDeleteButton: boolean, newEnterButton: boolean) => {
+    if (newEnterButton) {
+      submitGuess();
+      return;
+    }
+
+    if (newDeleteButton) {
+      clearLetter();
+      return;
+    }
+
+    addLetter(newCharacter);
+  };
+
+  const handleKeyboardInput = (value: string | "ENTER" | "BACKSPACE") => {
+    if (value === "ENTER") {
+      keyDownAction("", false, true);
+      return;
+    }
+
+    if (value === "BACKSPACE") {
+      keyDownAction("", true, false);
+      return;
+    }
+
+    if (allKeys.includes(value)) {
+      keyDownAction(value, false, false);
+    }
+  };
+
+  useEffect(() => {
+    const keyDown = (event: globalThis.KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+
+      if (key === "enter") {
+        keyDownAction("", false, true);
+      } else if (key === "backspace") {
+        keyDownAction("", true, false);
+      } else if (allKeys.includes(key)) {
+        keyDownAction(key, false, false);
+      }
+    };
+
+    window.addEventListener("keydown", keyDown);
+    return () => window.removeEventListener("keydown", keyDown);
+  }, [allKeys, attempts, characterId, gameOver, lineId, loading, victory, word]);
+
+  useEffect(() => {
+    if (victory || gameOver) {
+      setEndGameOpen(true);
+    }
+  }, [victory, gameOver]);
+
   return (
-    <>    
+    <>
+      <button className="rulesButton" onClick={() => setRulesOpen(true)}>
+        Règles
+      </button>
+
+      {rulesOpen && (
+        <Modal onClose={() => setRulesOpen(false)}>
+          <h2>Règles du Wordle</h2>
+          <p>Vous devez trouver le mot en 6 tentatives.</p>
+          <p>Chaque tentative contient 5 lettres.</p>
+          <p>Une case verte signifie que la lettre est bien placée.</p>
+          <p>Une case jaune signifie que la lettre est présente mais mal placée.</p>
+          <p>Une case grise signifie que la lettre n'est pas dans le mot.</p>
+          <button onClick={() => setRulesOpen(false)}>Jouer</button>
+        </Modal>
+      )}
+
       <main>
-        {loading == true ? <p>Chargement en cours...</p> : null}
-        {victory == true ? <h2>Vous avez gagner !</h2> : null}
-        {gameOver == true ? <h2>Vous avez perdu...</h2> : null}
+        {loading ? <p>Chargement en cours...</p> : null}
+        {victory ? <h2>Vous avez gagné !</h2> : null}
+        {gameOver ? <h2>Vous avez perdu...</h2> : null}
 
         <Grid attempts={attempts} />
-        {/* {keyboardActivated==true ? <section className="keyboard"> */}
-          
-        <section className="keyboard">
-          {touche1.map((e, index) => (
-            <article key={1000+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
-              <span>{e}</span>
-            </article>
-          ))}
-        </section>
-        <section className="keyboard">
-          {touche2.map((e, index) => (
-            <article key={1000+touche1.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
-              <span>{e}</span>
-            </article>
-          ))}
-        </section>
-        <section className="keyboard">
-          <article className='keyboardKey keyboardKeySuper'  onClick={(k) => { keyDownAction("", false, true); }}>
-            <span>⏎</span>
-          </article>
-          {touche3.map((e, index) => (
-            <article key={1000+touche1.length+touche2.length+index} className='keyboardKey'  onClick={(k) => { keyDownAction(e, false, false); }}>
-              <span>{e}</span>
-            </article>
-          ))}
-          <article className='keyboardKey keyboardKeySuper' onClick={(k) => { keyDownAction("", true, false); }}>
-            <span>⌫</span>
-          </article>
-        </section>
 
-        {/* </section> : null} */}
+        <Keyboard onKeyPress={handleKeyboardInput} disabled={loading || victory || gameOver} />
       </main>
+
+      {endGameOpen && (
+        <Modal onClose={() => setEndGameOpen(false)}>
+          {victory ? (
+            <>
+              <h2>Vous avez gagné !</h2>
+              <p>Bravo ! Vous avez trouvé le mot.</p>
+            </>
+          ) : (
+            <>
+              <h2>Vous avez perdu...</h2>
+              <p>Vous n'avez pas trouvé le mot.</p>
+            </>
+          )}
+
+          <p>Le mot recherché était :</p>
+          <strong>{word}</strong>
+          <button onClick={() => setEndGameOpen(false)}>Fermer</button>
+        </Modal>
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
