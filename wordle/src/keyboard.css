@@ -36,8 +36,8 @@
     justify-content: center;
 }
 
-.possibleLetterText {
+.possibleLetterText, .possibleLetterText:hover, .possibleLetterText:active {
     color: red;
-    background-color: rgb(106, 104, 104);
+    background-color: rgb(61, 59, 59);
     cursor: default;
 }
