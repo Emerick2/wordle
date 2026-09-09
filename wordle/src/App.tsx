@@ -3,16 +3,11 @@ import "./App.css";
 import Grid from "./components/Grid";
 import Keyboard from "./components/Keyboard";
 import Modal from "./components/Modal";
-import type { Status } from "./components/Case";
-
-export interface LetterProps {
-  letter: string;
-  status: Status;
-}
+import type { CaseProps } from "./components/Case";
 
 export interface AttemptProps {
   status: "pending" | "empty";
-  letters: LetterProps[];
+  letters: CaseProps[];
 }
 
 const WORD_LENGTH = 5;
@@ -33,9 +28,9 @@ const createEmptyAttempts = () =>
 const normalizeWord = (value: string) =>
   value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-const evaluateGuess = (guess: string[], target: string): LetterProps[] => {
+const evaluateGuess = (guess: string[], target: string): CaseProps[] => {
   const remaining = [...target.split("")];
-  const letters: LetterProps[] = guess.map((letter) => ({
+  const letters: CaseProps[] = guess.map((letter) => ({
     letter,
     status: "absent",
   }));

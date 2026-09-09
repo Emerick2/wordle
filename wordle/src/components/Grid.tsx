@@ -1,14 +1,9 @@
 import Attempt from "./Attempt";
-import type { Status } from "./Case";
-
-export interface LetterProps {
-  letter: string;
-  status: Status;
-}
+import type { CaseProps } from "./Case";
 
 export interface AttemptProps {
   status: "pending" | "empty";
-  letters: LetterProps[];
+  letters: CaseProps[];
 }
 
 interface GridProps {

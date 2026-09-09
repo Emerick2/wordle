@@ -5,7 +5,7 @@ export type Status =
   | "misplaced"
   | "absent";
 
-interface CaseProps {
+export interface CaseProps {
   letter: string;
   status: Status;
 }
