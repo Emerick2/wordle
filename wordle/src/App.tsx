@@ -137,60 +137,65 @@ function App() {
 
 
     // version 1 de l'API :
-    // useEffect(() => {
-    //   const callAPIWordle = async () => {
-    //     try {
-    //       const response = await fetch ( 'https://raw.githubusercontent.com/arbxz/wordle-api/main/src/data/words-fr.json');
+    useEffect(() => {
+      const callAPIWordle = async () => {
+        try {
+          const response = await fetch ( 'https://raw.githubusercontent.com/arbxz/wordle-api/main/src/data/words-fr.json');
           
-    //       if (!response.ok){
-    //         throw new Error(`Erreur l'or de l'appel de l'API : ${response.status}`);
-    //       }
+          if (!response.ok){
+            throw new Error(`Erreur l'or de l'appel de l'API : ${response.status}`);
+          }
           
-    //       const data = await response.json();
+          const data = await response.json();
           
-    //       let word = "azerty";
+          let word = "azerty";
 
-    //       if (data != null && data.words != null){
-    //         word = data.words[RandomInt(0, data.words.length)];
-    //       }
+          if (data != null && data.words != null){
+            word = data.words[RandomInt(0, data.words.length)];
+          }
 
-    //       setLoading(false);
-    //       setWord(word);
-    //       console.log(word);
-    //     } catch (erreur) {
-    //       console.error(`Erreur l'or de l'appel de l'API : ${erreur}`);
-    //       setLoading(false);
-    //       setWord("azerty");
-    //     }
-    //   };
+          setLoading(false);
+          setWord(word);
+          console.log(word);
+        } catch (erreur) {
+          console.error(`Erreur l'or de l'appel de l'API : ${erreur}`);
+          setLoading(false);
+          setWord("azerty");
+        }
+      };
 
-    //   callAPIWordle();
-    // }, []);
+      callAPIWordle();
+    }, []);
 
 
   // version 2 de l'API :
-  useEffect(() => {
-    fetch("http://localhost:3000/api/word?lang=fr", {
-      headers: {
-        "x-api-key": "Abc123",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setWord(data.word);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch("/api/word?lang=fr", {
+  //     headers: {
+  //       "x-api-key": "Abc123",
+  //     },
+  //   })
+  //     .then((response) => {
+  //       if (!response.ok) {
+  //         throw new Error(`Erreur API : ${response.status}`);
+  //       }
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       setWord(data.word);
+  //       console.log(data);
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       setLoading(false);
+  //     });
+  // }, []);
 
   const verificationMot = (lineIdentifier: number) => {
     if (lineIdentifier >= attempts.length) return;
 
-    // const wordSearch = word;
-    let wordSearch = "azert";
+    let wordSearch = word;
     wordSearch = wordSearch.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     
     let numberOfCorrectAnswers = 0;
@@ -233,7 +238,7 @@ function App() {
         letters: updatedLetters,
       };
 
-      if (numberOfCorrectAnswers >= 4) {
+      if (numberOfCorrectAnswers >= 5) {
         setVictory(true);
       } else if (lineIdentifier >= 5) {
         setGameOver(true);
