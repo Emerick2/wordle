@@ -4,11 +4,7 @@ import Grid from "./components/Grid";
 import Keyboard from "./components/Keyboard";
 import Modal from "./components/Modal";
 import type { CaseProps } from "./components/Case";
-
-export interface AttemptProps {
-  status: "pending" | "empty";
-  letters: CaseProps[];
-}
+import type { AttemptProps } from "./components/Grid";
 
 const WORD_LENGTH = 5;
 const MAX_ATTEMPTS = 6;
